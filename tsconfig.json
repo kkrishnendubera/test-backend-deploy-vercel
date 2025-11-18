@@ -25,8 +25,9 @@
       "@modules/*": ["src/modules/*"],
       "@common/*": ["src/common/*"],
       "@auth/*": ["src/auth/*"],
-      "@config/*": ["src/config/*"],
+      "@config/*": ["src/config/*"]
     }
   },
-  "exclude" : ["src/**/*.spec.ts", "src/**/*e2e-spec.ts","dist/**"]
+  "include": ["src/**/*"],  
+  "exclude": ["src/**/*.spec.ts", "src/**/*e2e-spec.ts", "dist/**"]
 }
