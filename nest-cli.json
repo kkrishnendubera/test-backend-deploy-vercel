@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "@nestjs/swagger/plugin"
+      }
+    ],
+    "assets": [
+      "**/*.env"
+    ]
+  },
+ "exec": "node --no-warnings -r ts-node/register -r tsconfig-paths/register"
+
+}

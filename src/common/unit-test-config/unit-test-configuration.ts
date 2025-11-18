@@ -1,0 +1,15 @@
+export const UnitTestConfigurations = () => ({
+    PORT: 3030,
+    JWT_SECRET: 'dummy_jwt_secret',
+    JWT_EXPIRES_IN: '15m',
+    JWT_REFRESH_EXPIRES_IN: 604800,
+    BACKEND_URL: 'http://localhost:3000',
+    MAIL_USERNAME: 'zayla.devis@gmail.com',
+    MAIL_PASSWORD: 'ofqshganhvxsngrx',
+    SITE_EMAIL: 'zayla.devis@gmail.com',
+    PROJECT_NAME: 'TestProject',
+    SALT_ROUND: '10',
+    CRYPTO_ALGORITHM:'aes-256-cbc',
+    CRYPTO_AES_KEY:'ff9122b446803a7c7a07e31fd75e9da4c2b5943b0d92d485c7e9ea55243c79fb',
+    CRYPTO_AES_IV:'fe95e8b5cf99d9144307f58cbafb491a',
+});

@@ -1,0 +1,14 @@
+[
+    {
+        "role": "admin",
+        "roleDisplayName": "Administrator",
+        "roleGroup": "backend",
+        "status": "Active"
+    },
+    {
+        "role": "user",
+        "roleDisplayName": "User",
+        "roleGroup": "frontend",
+        "status": "Active"
+    }
+]
