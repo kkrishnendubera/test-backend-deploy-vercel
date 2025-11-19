@@ -125,6 +125,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       );
     }
 
+    
     return cachedServer(req, res);
   } catch (error) {
     console.error('❌ Serverless Handler Error:', error);
