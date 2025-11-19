@@ -1,4 +1,4 @@
-import { normalizeFilename } from '@helpers/utils.helper';
+import { normalizeFilename } from '../../helpers/utils.helper';
 import { BadRequestException } from '@nestjs/common';
 import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
