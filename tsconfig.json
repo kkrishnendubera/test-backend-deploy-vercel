@@ -11,15 +11,9 @@
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "resolveJsonModule": true,
+
     "paths": {
       "@helpers/*": ["src/helpers/*"],
       "@modules/*": ["src/modules/*"],
@@ -28,6 +22,6 @@
       "@config/*": ["src/config/*"]
     }
   },
-  "include": ["src/**/*"],  
-  "exclude": ["src/**/*.spec.ts", "src/**/*e2e-spec.ts", "dist/**"]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }

@@ -5,16 +5,20 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      { "include": "modules/**/*", "outDir": "dist" },
-      { "include": "auth/**/*", "outDir": "dist" },
-      { "include": "helpers/**/*", "outDir": "dist" },
-      { "include": "common/**/*", "outDir": "dist" },
-      { "include": "**/*.env", "outDir": "dist" }
+      {
+        "include": "**/*.env",
+        "outDir": "./dist"
+      }
     ],
     "watchAssets": true,
     "plugins": [
-      { "name": "@nestjs/swagger/plugin" }
+      {
+        "name": "@nestjs/swagger/plugin",
+        "options": {
+          "classValidatorShim": true,
+          "dtoFileNameSuffix": [".dto.ts", ".entity.ts"]
+        }
+      }
     ]
-  },
-  "exec": "node --no-warnings -r ts-node/register -r tsconfig-paths/register"
+  }
 }

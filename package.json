@@ -6,7 +6,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/root.ts",
+    "start": "node dist/main.js",
     "dev": "cross-env NODE_ENV=development nest start --watch",
     "swc": "cross-env NODE_ENV=development nest start -b swc --type-check -w",
     "prod": "cross-env NODE_ENV=production node dist/src/main",

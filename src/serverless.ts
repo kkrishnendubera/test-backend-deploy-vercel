@@ -1,47 +1,57 @@
 // src/serverless.ts
+import 'tsconfig-paths/register';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ExpressAdapter } from '@nestjs/platform-express';
+
 import express from 'express';
 import { join } from 'path';
-import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import compression from 'compression';
 
+import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 let cachedApp: any = null;
 
-// ✅ Export default function with correct types — NO "Handler"
-export default async (req: VercelRequest, res: VercelResponse) => {
+// ----------------------------------------------------------------------
+// 🚀 MAIN SERVERLESS HANDLER
+// ----------------------------------------------------------------------
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!cachedApp) {
-    const expressApp = express();
+    const server = express();
+
     const app = await NestFactory.create<NestExpressApplication>(
       AppModule,
-      new ExpressAdapter(expressApp),
+      new ExpressAdapter(server),
     );
 
     const configService = app.get(ConfigService);
+    const nodeEnv = configService.get('NODE_ENV');
+    const backendUrl =
+      configService.get('BACKEND_URL') || 'https://your-project.vercel.app';
 
-    // Enable CORS
+    // ----------------------------------------------------------------------
+    // CORS
+    // ----------------------------------------------------------------------
     app.enableCors({
       origin: '*',
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     });
 
-    // Compression
-    app.use(compression());
-
-    // Helmet Security Headers
-    const backendUrl = configService.get('BACKEND_URL') || 'https://your-project.vercel.app';
+    // ----------------------------------------------------------------------
+    // Helmet CSP + Security
+    // ----------------------------------------------------------------------
     app.use(
       helmet({
         crossOriginEmbedderPolicy: false,
         crossOriginResourcePolicy: false,
         contentSecurityPolicy:
-          configService.get('NODE_ENV') === 'development'
+          nodeEnv === 'development'
             ? {
                 directives: {
                   defaultSrc: ["'self'"],
@@ -71,20 +81,15 @@ export default async (req: VercelRequest, res: VercelResponse) => {
                     'blob:',
                     'https:',
                     'http:',
-                    `${backendUrl}`,
+                    backendUrl,
                   ],
                   connectSrc: [
                     "'self'",
-                    'wss:',
                     'ws:',
-                    'blob:',
-                    'https://cdnjs.cloudflare.com',
-                    'https://cdn.quilljs.com',
-                    'https://cdn.jsdelivr.net',
-                    'https://cdn.datatables.net',
-                    'https://*.tile.osm.org',
+                    'wss:',
                     'https://api.openai.com',
                     'https://api.stripe.com',
+                    'https://cdn.jsdelivr.net',
                   ],
                   frameSrc: [
                     "'self'",
@@ -93,16 +98,15 @@ export default async (req: VercelRequest, res: VercelResponse) => {
                   ],
                   mediaSrc: ["'self'", 'blob:'],
                   objectSrc: ["'none'"],
-                  baseUri: ["'self'"],
-                  formAction: ["'self'"],
-                  frameAncestors: ["'none'"],
                 },
               }
             : false,
       }),
     );
 
+    // ----------------------------------------------------------------------
     // Permissions Policy
+    // ----------------------------------------------------------------------
     app.use((_req, res, next) => {
       res.setHeader(
         'Permissions-Policy',
@@ -121,34 +125,34 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       next();
     });
 
-    // Global fallback error handler
-    app.use((err, _req, res, _next) => {
-      if (res.headersSent) return;
-      res.status(err.status || 500);
-      if (_req.path.startsWith('/api') || _req.path.startsWith('/admin')) {
-        return res.json({ message: err.message || 'Internal Server Error' });
-      }
-      res.type('html').send('<h1>Error occurred</h1>');
-    });
+    // ----------------------------------------------------------------------
+    // Compression
+    // ----------------------------------------------------------------------
+    app.use(compression());
 
-    // Global prefix and middlewares
+    // ----------------------------------------------------------------------
+    // API PREFIX + VERSIONING
+    // ----------------------------------------------------------------------
     app.setGlobalPrefix('/api');
     app.enableVersioning();
 
-    // Static assets
+    // ----------------------------------------------------------------------
+    // Static Files
+    // ----------------------------------------------------------------------
     app.useStaticAssets(join(__dirname, '..', 'public'));
     app.setBaseViewsDir(join(__dirname, '..', 'views'));
 
-    // Swagger Setup (Only in Development)
-    if (configService.get('NODE_ENV') === 'development') {
-      const createConfig = (title: string, description: string) =>
+    // ----------------------------------------------------------------------
+    // 🔥 SWAGGER (ONLY DEV MODE)
+    // ----------------------------------------------------------------------
+    if (nodeEnv === 'development') {
+      const createSwaggerConfig = (title: string, description: string) =>
         new DocumentBuilder()
           .setOpenAPIVersion('3.1.0')
-          .addBearerAuth()
           .setTitle(title)
           .setDescription(description)
           .setVersion('1.0')
-          .addTag('Auth')
+          .addBearerAuth()
           .addServer(backendUrl)
           .build();
 
@@ -156,52 +160,27 @@ export default async (req: VercelRequest, res: VercelResponse) => {
         .swagger-ui .topbar {
           background-color: #1e293b;
           border-bottom: 2px solid #0ea5e9;
-          height: 60px;
-          position: relative;
-        }
-        .swagger-ui .topbar::after {
-          content: '';
-          position: absolute;
-          right: 20px;
-          top: 10px;
-          width: 140px;
-          height: 40px;
-          background: url("${backendUrl}/uploads/assets/nestjs1.png") no-repeat center;
-          background-size: contain;
-        }
-        .swagger-ui .info h2 {
-          color: #0ea5e9;
         }
       `;
 
-      const configAdmin = createConfig(
-        `${configService.get('PROJECT_NAME')} Admin panel API`,
-        `The Admin panel API. <br><br> API endpoints for Frontend application API. <br> <a href="/apidoc/v1/user">Frontend application API-Doc</a> <br><br> 📥 OpenAPI JSON (Postman): <code>${backendUrl}/apidoc/v1/openapi.json</code>`,
-      );
-      const configApi = createConfig(
-        `${configService.get('PROJECT_NAME')} Frontend application API`,
-        `The User API. <br><br> API endpoints for Admin panel API. <br> <a href="/apidoc/v1">Admin panel API-Doc</a> <br><br> 📥 OpenAPI JSON (Postman): <code>${backendUrl}/apidoc/v1/user/openapi.json</code>`,
+      // ADMIN API DOC
+      const adminSwaggerConfig = createSwaggerConfig(
+        `${configService.get('PROJECT_NAME')} Admin API`,
+        `Admin API documentation`
       );
 
-      const documentAdmin = SwaggerModule.createDocument(app, configAdmin);
-      const documentApi = SwaggerModule.createDocument(app, configApi);
+      const userSwaggerConfig = createSwaggerConfig(
+        `${configService.get('PROJECT_NAME')} User API`,
+        `User API documentation`
+      );
+
+      const adminDoc = SwaggerModule.createDocument(app, adminSwaggerConfig);
+      const userDoc = SwaggerModule.createDocument(app, userSwaggerConfig);
 
       SwaggerModule.setup(
         'apidoc/v1',
         app,
-        {
-          ...documentAdmin,
-          paths: Object.fromEntries(
-            Object.entries(documentAdmin.paths).filter(
-              ([key]) =>
-                key.includes('admin') ||
-                (key.includes('auth') &&
-                  !key.includes('register') &&
-                  !key.includes('login-user') &&
-                  !key.includes('logout-user')),
-            ),
-          ),
-        },
+        adminDoc,
         {
           customCss,
           swaggerOptions: { defaultModelsExpandDepth: -1 },
@@ -212,18 +191,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       SwaggerModule.setup(
         'apidoc/v1/user',
         app,
-        {
-          ...documentApi,
-          paths: Object.fromEntries(
-            Object.entries(documentApi.paths).filter(
-              ([key]) =>
-                !key.includes('admin') ||
-                (key.includes('auth') &&
-                  !key.includes('login-admin') &&
-                  !key.includes('logout-admin')),
-            ),
-          ),
-        },
+        userDoc,
         {
           customCss,
           swaggerOptions: { defaultModelsExpandDepth: -1 },
@@ -232,19 +200,33 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       );
     }
 
-    await app.init();
-    cachedApp = expressApp;
+    // ----------------------------------------------------------------------
+    // GLOBAL ERROR HANDLER
+    // ----------------------------------------------------------------------
+    app.use((err, req, res, next) => {
+      if (res.headersSent) return next(err);
 
-    console.info(
-      '\x1b[36m%s\x1b[0m',
-      '🚀 Bootstrap:',
-      `Starting application in [${configService.get('NODE_ENV')?.toUpperCase()}] mode`,
+      const isApi = req.path.startsWith('/api');
+      res.status(err.status || 500);
+
+      return isApi
+        ? res.json({ message: err.message || 'Internal Server Error' })
+        : res.type('html').send('<h1>Something went wrong</h1>');
+    });
+
+    await app.init();
+    cachedApp = server;
+
+    console.log(
+      '🚀 Serverless bootstrap:',
+      `[${nodeEnv?.toUpperCase()}]`,
+      '| Node:',
+      process.version,
     );
-    console.info('\x1b[32m%s\x1b[0m', '🔧 Node Version:', process.version);
   }
 
-  // ✅ Wrap in Promise to ensure async completion
+  // Return server promise
   return new Promise<void>((resolve) => {
     cachedApp(req, res, resolve);
   });
-};
+}
