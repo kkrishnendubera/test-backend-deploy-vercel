@@ -145,8 +145,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ----------------------------------------------------------------------
     // 🔥 SWAGGER (ONLY DEV MODE)
     // ----------------------------------------------------------------------
-    if (nodeEnv === 'development') {
-      const createSwaggerConfig = (title: string, description: string) =>
+    // if (nodeEnv === 'development') {
+     
+    // }
+ const createSwaggerConfig = (title: string, description: string) =>
         new DocumentBuilder()
           .setOpenAPIVersion('3.1.0')
           .setTitle(title)
@@ -198,8 +200,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           jsonDocumentUrl: 'apidoc/v1/user/openapi.json',
         },
       );
-    }
-
     // ----------------------------------------------------------------------
     // GLOBAL ERROR HANDLER
     // ----------------------------------------------------------------------
