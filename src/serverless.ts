@@ -31,8 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const configService = app.get(ConfigService);
     const nodeEnv = configService.get('NODE_ENV');
-    const backendUrl =
-      configService.get('BACKEND_URL') || 'https://your-project.vercel.app';
+    const backendUrl =configService.get('BACKEND_URL') 
 
     // ----------------------------------------------------------------------
     // CORS
@@ -50,57 +49,57 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       helmet({
         crossOriginEmbedderPolicy: false,
         crossOriginResourcePolicy: false,
-        contentSecurityPolicy:
-          nodeEnv === 'development'
-            ? {
-                directives: {
-                  defaultSrc: ["'self'"],
-                  scriptSrc: [
-                    "'self'",
-                    "'unsafe-inline'",
-                    'https://cdn.jsdelivr.net',
-                    'https://cdnjs.cloudflare.com',
-                    'https://js.stripe.com',
-                  ],
-                  styleSrc: [
-                    "'self'",
-                    "'unsafe-inline'",
-                    'https://fonts.googleapis.com',
-                    'https://cdn.jsdelivr.net',
-                    'https://cdn.datatables.net',
-                  ],
-                  fontSrc: [
-                    "'self'",
-                    'data:',
-                    'https://fonts.gstatic.com',
-                    'https://cdnjs.cloudflare.com',
-                  ],
-                  imgSrc: [
-                    "'self'",
-                    'data:',
-                    'blob:',
-                    'https:',
-                    'http:',
-                    backendUrl,
-                  ],
-                  connectSrc: [
-                    "'self'",
-                    'ws:',
-                    'wss:',
-                    'https://api.openai.com',
-                    'https://api.stripe.com',
-                    'https://cdn.jsdelivr.net',
-                  ],
-                  frameSrc: [
-                    "'self'",
-                    'https://js.stripe.com',
-                    'https://hooks.stripe.com',
-                  ],
-                  mediaSrc: ["'self'", 'blob:'],
-                  objectSrc: ["'none'"],
-                },
-              }
-            : false,
+        // contentSecurityPolicy:
+        //   nodeEnv === 'development'
+        //     ? {
+        //         directives: {
+        //           defaultSrc: ["'self'"],
+        //           scriptSrc: [
+        //             "'self'",
+        //             "'unsafe-inline'",
+        //             'https://cdn.jsdelivr.net',
+        //             'https://cdnjs.cloudflare.com',
+        //             'https://js.stripe.com',
+        //           ],
+        //           styleSrc: [
+        //             "'self'",
+        //             "'unsafe-inline'",
+        //             'https://fonts.googleapis.com',
+        //             'https://cdn.jsdelivr.net',
+        //             'https://cdn.datatables.net',
+        //           ],
+        //           fontSrc: [
+        //             "'self'",
+        //             'data:',
+        //             'https://fonts.gstatic.com',
+        //             'https://cdnjs.cloudflare.com',
+        //           ],
+        //           imgSrc: [
+        //             "'self'",
+        //             'data:',
+        //             'blob:',
+        //             'https:',
+        //             'http:',
+        //             backendUrl,
+        //           ],
+        //           connectSrc: [
+        //             "'self'",
+        //             'ws:',
+        //             'wss:',
+        //             'https://api.openai.com',
+        //             'https://api.stripe.com',
+        //             'https://cdn.jsdelivr.net',
+        //           ],
+        //           frameSrc: [
+        //             "'self'",
+        //             'https://js.stripe.com',
+        //             'https://hooks.stripe.com',
+        //           ],
+        //           mediaSrc: ["'self'", 'blob:'],
+        //           objectSrc: ["'none'"],
+        //         },
+        //       }
+        //     : false,
       }),
     );
 
