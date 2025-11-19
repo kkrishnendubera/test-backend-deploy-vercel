@@ -89,8 +89,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const adminDoc = SwaggerModule.createDocument(app, adminSwaggerConfig);
       const userDoc = SwaggerModule.createDocument(app, userSwaggerConfig);
 
-      SwaggerModule.setup('apidoc/v1', app, adminDoc);
-      SwaggerModule.setup('apidoc/v1/user', app, userDoc);
+      SwaggerModule.setup('apidoc/v1', app, adminDoc, {
+        customSiteTitle: 'Admin API',
+        customCssUrl: 'https://unpkg.com/swagger-ui-dist/swagger-ui.css',
+        customJs: [
+          'https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js',
+          'https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js',
+        ],
+      });
+
+      SwaggerModule.setup('apidoc/v1/user', app, userDoc, {
+        customSiteTitle: 'User API',
+        customCssUrl: 'https://unpkg.com/swagger-ui-dist/swagger-ui.css',
+        customJs: [
+          'https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js',
+          'https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js',
+        ],
+      });
 
       // ----------------------------------------------------------------------
       // Global Error Handler
