@@ -13,15 +13,23 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-
     "paths": {
-      "@helpers/*": ["src/helpers/*"],
-      "@modules/*": ["src/modules/*"],
-      "@common/*": ["src/common/*"],
-      "@auth/*": ["src/auth/*"],
-      "@config/*": ["src/config/*"]
+      "@auth/*": [
+        "src/auth/*"
+      ],
+      "@modules/*": [
+        "src/modules/*"
+      ],
+      "@common/*": [
+        "src/common/*"
+      ]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

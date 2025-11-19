@@ -1,14 +1,26 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from '@auth/auth.module';
-import { HelpersModule } from '@helpers/helpers.module';
-import { RefreshTokenModule } from '@modules/refresh-token/refresh-token.module';
-import { RoleModule } from '@modules/role/role.module';
-import { UserDeviceRepositoryModule } from '@modules/user-devices/repository/user-device-repository.module';
-import { UserRepositoryModule } from '@modules/users/repositories/user-repository.module';
-import { UsersModule } from '@modules/users/users.module';
+
+// FIXED: no alias, use relative paths
+import { AuthModule } from './auth/auth.module';
+import { HelpersModule } from './helpers/helpers.module';
+
+// refresh-token module
+import { RefreshTokenModule } from './modules/refresh-token/refresh-token.module';
+
+// role module
+import { RoleModule } from './modules/role/role.module';
+
+// user devices repository module
+import { UserDeviceRepositoryModule } from './modules/user-devices/repository/user-device-repository.module';
+
+// user repository module
+import { UserRepositoryModule } from './modules/users/repositories/user-repository.module';
+
+// users module
+import { UsersModule } from './modules/users/users.module';
+
+// config module
 import { ApiConfigModule } from './config.module';
-
-
 
 @Module({
     imports: [
@@ -21,7 +33,6 @@ import { ApiConfigModule } from './config.module';
         UserRepositoryModule,
         UsersModule,
     ],
-    providers: []
+    providers: [],
 })
-
-export class AppModule { }
+export class AppModule {}
