@@ -1,3 +1,4 @@
+
 {
   "version": 2,
   "builds": [
@@ -5,14 +6,11 @@
       "src": "src/serverless.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["dist/**", "public/**"]
+        "includeFiles": ["dist/**", "public/**", "views/**"]
       }
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/serverless.ts"
-    }
+    { "src": "/(.*)", "dest": "src/serverless.ts" }
   ]
 }
